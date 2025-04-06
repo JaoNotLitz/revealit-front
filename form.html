@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>RevealIt - Deixe sua mensagem</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #4b4a7c;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .fixed-top-left {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      z-index: 1000;
+    }
+
+    .fixed-top-left a {
+      text-decoration: none;
+      background-color: #fff;
+      color: #4b4a7c;
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-weight: bold;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+      transition: background 0.2s ease;
+    }
+
+    .fixed-top-left a:hover {
+      background-color: #e4e4ff;
+    }
+
+    .form-card {
+      background: white;
+      padding: 2.5rem;
+      border-radius: 16px;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+      text-align: center;
+      width: 90%;
+      max-width: 400px;
+    }
+
+    .form-card h1 {
+      margin-bottom: 1.5rem;
+      color: #2c2c5a;
+    }
+
+    .form-card input,
+    .form-card textarea {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 1rem;
+      resize: none;
+    }
+
+    .form-card button {
+      background-color: #5c5cf3;
+      color: white;
+      border: none;
+      padding: 10px 24px;
+      font-size: 1rem;
+      font-weight: bold;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .form-card button:hover {
+      background-color: #4a4ad1;
+    }
+
+    .info {
+      margin-top: 1.2rem;
+      font-size: 0.9rem;
+      color: #444;
+    }
+  </style>
+</head>
+<body>
+  <!-- Botão fixo -->
+  <div class="fixed-top-left">
+    <a href="index.html">← Voltar</a>
+  </div>
+
+  <!-- Card do formulário -->
+  <div class="form-card">
+    <h1>Seu Irmão em Cristo Secreto</h1>
+    <form id="message-form">
+      <input type="text" id="name" placeholder="Seu nome" name="name" required />
+      <textarea id="message" placeholder="Nome do Eleito" name="message" rows="5" required></textarea>
+      <button type="submit">Enviar</button>
+    </form>
+  </div>
+
+  <script>
+    const apiUrl = "https://revealit.onrender.com/messages";
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const form = document.getElementById("message-form");
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const name = document.getElementById("name").value;
+        const message = document.getElementById("message").value;
+
+        await fetch(apiUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, message })
+        });
+
+        window.location.href = "index.html";
+      });
+    });
+  </script>
+</body>
+</html>
