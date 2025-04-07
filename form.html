@@ -106,16 +106,22 @@
 
   <script>
     const apiUrl = "https://revealit.onrender.com/messages";
+  
+  document.addEventListener("DOMContentLoaded", () => {
+    const form = document.getElementById("message-form");
+    const button = form.querySelector("button");
 
-    document.addEventListener("DOMContentLoaded", () => {
-      const form = document.getElementById("message-form");
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
 
-      form.addEventListener("submit", async (e) => {
-        e.preventDefault();
+      // Desabilita o botão para evitar múltiplos envios
+      button.disabled = true;
+      button.textContent = "Enviando...";
 
-        const name = document.getElementById("name").value;
-        const message = document.getElementById("message").value;
+      const name = document.getElementById("name").value;
+      const message = document.getElementById("message").value;
 
+      try {
         await fetch(apiUrl, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -123,8 +129,12 @@
         });
 
         window.location.href = "index.html";
-      });
+      } catch (error) {
+        alert("Erro ao enviar mensagem. Tente novamente.");
+        button.disabled = false;
+        button.textContent = "Enviar";
+      }
     });
-  </script>
+  });  </script>
 </body>
 </html>
