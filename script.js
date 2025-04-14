@@ -2,7 +2,7 @@ const apiUrl = "https://revealit.onrender.com/messages";
 
 function isViewingPeriod() {
     const now = new Date();
-    const start = new Date('2025-04-11T20:00:00'); // início da revelação
+    const start = new Date('2025-04-14T13:04:00'); // início da revelação
     const end = new Date(start.getTime() + 24 * 60 * 60 * 1000); // +24 horas
 
     return now >= start && now <= end;
