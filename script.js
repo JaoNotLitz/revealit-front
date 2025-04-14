@@ -2,9 +2,8 @@ const apiUrl = "https://revealit.onrender.com/messages";
 
 function isViewingPeriod() {
     const now = new Date();
-    const start = new Date('2025-04-14T13:04:00'); // início da revelação
+    const start = new Date('2025-04-14T13:08:00'); // início da revelação
     const end = new Date(start.getTime() + 24 * 60 * 60 * 1000); // +24 horas
-
     return now >= start && now <= end;
 }
 
@@ -40,6 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const warning = document.getElementById("form-warning");
 
     if (form) {
+        // Inicialmente, se estiver no período de revelação, esconde o formulário.
         if (isViewingPeriod()) {
             form.classList.add("hidden");
             warning.classList.remove("hidden");
@@ -60,21 +60,27 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Exibe mensagens com ou sem revelação no início
+    // Renderiza as mensagens na página inicialmente (com "?" ou reveladas, conforme a data)
     fetchAndRenderMessages(isViewingPeriod());
 });
 
-// === LOOP DE VERIFICAÇÃO DE REVELAÇÃO COM ATUALIZAÇÃO DINÂMICA ===
+// LOOP DE VERIFICAÇÃO DE REVELAÇÃO - ATUALIZA DINAMICAMENTE SEM PRECISAR DAR F5
 (function watchRevealTime() {
-    let alreadyRevealed = isViewingPeriod();
+    setInterval(async () => {
+        // Se já estiver no período de revelação, refaz o fetch e atualiza as mensagens.
+        if (isViewingPeriod()) {
+            console.log("✨ Período de revelação detectado! Atualizando mensagens...");
+            await fetchAndRenderMessages(true);
 
-    let intervalId = setInterval(async () => {
-        if (isViewingPeriod() && !alreadyRevealed) {
-            alreadyRevealed = true;
-            console.log("✨ Hora da revelação! Atualizando mensagens...");
-            await fetchAndRenderMessages(true); // Atualiza mensagens com conteúdo real
+            // Se desejar, também pode atualizar a visibilidade do formulário:
+            const form = document.getElementById("message-form");
+            const warning = document.getElementById("form-warning");
+            if (form && warning) {
+                form.classList.add("hidden");
+                warning.classList.remove("hidden");
+            }
         } else {
             console.log("⏳ Ainda não é hora da revelação...");
         }
-    }, 5000);
+    }, 5000); // verifica a cada 5 segundos
 })();
