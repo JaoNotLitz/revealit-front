@@ -8,6 +8,33 @@ function isViewingPeriod() {
     return now >= start && now <= end;
 }
 
+function renderMessages(messages, reveal = false) {
+    const messagesDiv = document.getElementById("messages");
+    if (!messagesDiv) return;
+
+    messagesDiv.innerHTML = ""; // Limpa as mensagens antigas
+
+    messages.forEach(entry => {
+        const bubble = document.createElement("div");
+        bubble.className = "bubble";
+        bubble.innerHTML = `
+            <strong>${entry.name}</strong><br>
+            ${reveal ? entry.message : "?"}
+        `;
+        messagesDiv.appendChild(bubble);
+    });
+}
+
+async function fetchAndRenderMessages(reveal = false) {
+    try {
+        const res = await fetch(apiUrl);
+        const data = await res.json();
+        renderMessages(data, reveal);
+    } catch (err) {
+        console.error("Erro ao buscar mensagens:", err);
+    }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
     const form = document.getElementById("message-form");
     const warning = document.getElementById("form-warning");
@@ -33,38 +60,21 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    const messagesDiv = document.getElementById("messages");
-    if (messagesDiv) {
-        fetch(apiUrl)
-            .then(res => res.json())
-            .then(data => {
-                data.forEach(entry => {
-                    const bubble = document.createElement("div");
-                    bubble.className = "bubble";
-                    bubble.innerHTML = `
-                        <strong>${entry.name}</strong><br>
-                        ${isViewingPeriod() ? entry.message : "?"}
-                    `;
-                    messagesDiv.appendChild(bubble);
-                });
-            });
-    }
+    // Exibe mensagens com ou sem revelação no início
+    fetchAndRenderMessages(isViewingPeriod());
 });
 
-// === LOOP DE VERIFICAÇÃO DE REVELAÇÃO COM PARADA ===
+// === LOOP DE VERIFICAÇÃO DE REVELAÇÃO COM ATUALIZAÇÃO DINÂMICA ===
 (function watchRevealTime() {
-    let alreadyReloaded = false;
+    let alreadyRevealed = isViewingPeriod();
 
-    let intervalId = setInterval(() => {
-        if (isViewingPeriod()) {
-            if (!alreadyReloaded) {
-                alreadyReloaded = true;
-                console.log("✨ Hora da revelação! Recarregando...");
-                clearInterval(intervalId); // parar o loop
-                location.reload();
-            }
+    let intervalId = setInterval(async () => {
+        if (isViewingPeriod() && !alreadyRevealed) {
+            alreadyRevealed = true;
+            console.log("✨ Hora da revelação! Atualizando mensagens...");
+            await fetchAndRenderMessages(true); // Atualiza mensagens com conteúdo real
         } else {
             console.log("⏳ Ainda não é hora da revelação...");
         }
-    }, 5000); // verifica a cada 5 segundos
+    }, 5000);
 })();
