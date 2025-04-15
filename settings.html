@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>RevealIt - Settings</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #4b4a7c;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem;
+      color: #2c2c5a;
+    }
+    
+    .link-back {
+      margin-bottom: 1rem;
+      text-decoration: none;
+      font-size: 1rem;
+      color: #5c5cf3;
+      align-self: flex-start;
+      margin-left: 20px;
+    }
+    
+    .container {
+      background: white;
+      padding: 2.5rem;
+      border-radius: 16px;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+      width: 90%;
+      max-width: 500px;
+      margin-bottom: 2rem;
+    }
+    
+    h1, h3 {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+    
+    form {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    form input, form button {
+      padding: 10px;
+      margin-bottom: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 1rem;
+    }
+    
+    form input[type="datetime-local"] {
+      border: 1px solid #aaa;
+    }
+    
+    form button {
+      background-color: #5c5cf3;
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      font-weight: bold;
+    }
+    
+    form button:hover {
+      background-color: #4a4ad1;
+    }
+    
+    /* Botão para resetar nomes em vermelho */
+    .reset-button {
+      background-color: #e74c3c;
+    }
+    
+    .reset-button:hover {
+      background-color: #c0392b;
+    }
+  </style>
+</head>
+<body>
+  <!-- Link para voltar à página inicial -->
+  <div style="display: inline-block; background-color: white; color: black; padding: 10px 20px; border-radius: 25px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); font-family: sans-serif; font-weight: bold;">
+    <a class="link-back" href="index.html" style="text-decoration: none; color: inherit;">← Voltar</a>
+  </div>
+<br>  
+  
+  <!-- Formulário para Atualizar Data de Revelação -->
+  <div class="container">
+    <h1>Atualizar Data de Revelação</h1>
+    <form id="update-date-form">
+      <label for="localDateTime">Data e Hora da Revelação:</label>
+      <!-- Usando input datetime-local para facilitar a seleção da data/hora -->
+      <input type="datetime-local" id="localDateTime" name="localDateTime" required>
+      
+      <label for="password-date">Senha:</label>
+      <input type="password" id="password-date" name="password" required placeholder="Digite a senha">
+      
+      <button type="submit">Atualizar Data</button>
+    </form>
+  </div>
+  
+  <!-- Formulário para Resetar Nomes -->
+  <div class="container">
+    <h3>Resetar Nomes</h3>
+    <form id="reset-names-form">
+      <label for="reset-password">Senha:</label>
+      <input type="password" id="reset-password" name="password" required placeholder="Digite a senha">
+      
+      <button type="submit" class="reset-button">Resetar Nomes</button>
+    </form>
+  </div>
+  
+  <script>
+    // Endpoints dos serviços
+    const updateDateUrl = "https://revealit.onrender.com/date";
+    const resetNamesUrl  = "https://revealit.onrender.com/messages/danger";
+    
+    // Atualiza a data de revelação (POST /date)
+    document.getElementById("update-date-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      
+      const localDateTimeInput = document.getElementById("localDateTime").value;
+      const passwordInput = document.getElementById("password-date").value;
+      
+      const payload = {
+        localDateTime: localDateTimeInput,  // Exemplo: "2025-04-15T15:31:05"
+        password: passwordInput
+      };
+      
+      try {
+        const res = await fetch(updateDateUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        
+        if (res.ok) {
+          alert("Data de revelação atualizada com sucesso!");
+        } else {
+          alert("Erro ao atualizar a data. Verifique a senha e tente novamente.");
+        }
+      } catch (error) {
+        console.error("Erro ao atualizar data:", error);
+        alert("Erro na requisição para atualizar a data.");
+      }
+    });
+    
+    // Reseta os nomes (DELETE /messages/danger)
+    document.getElementById("reset-names-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      
+      const password = document.getElementById("reset-password").value;
+      const payload = { password };
+      
+      try {
+        const res = await fetch(resetNamesUrl, {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        
+        if (res.ok) {
+          alert("Reset realizado com sucesso!");
+        } else {
+          alert("Erro ao resetar nomes. Verifique a senha e tente novamente.");
+        }
+        e.target.reset();
+      } catch (error) {
+        console.error("Erro ao resetar nomes:", error);
+        alert("Erro ao enviar a requisição para resetar os nomes.");
+      }
+    });
+  </script>
+</body>
+</html>
