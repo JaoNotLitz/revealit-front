@@ -1,16 +1,14 @@
-// URLs dos endpoints
 const messagesApiUrl = "https://revealit.onrender.com/messages";
 const dateApiUrl = "https://revealit.onrender.com/date";
 
-// Variável global para armazenar a data de revelação
 let storedRevelationDate = null;
+let fetchedAfterReveal = false;
 
-// Obtém a data de revelação do back-end (chamada única)
+// Função para obter a data de revelação
 async function getRevelationDate() {
     try {
         const res = await fetch(dateApiUrl);
         const data = await res.json();
-        // Formato recebido: { "id": 8, "revelationDay": "2025-04-15T10:30:45" }
         return new Date(data.revelationDay);
     } catch (err) {
         console.error("Erro ao buscar data de revelação:", err);
@@ -18,19 +16,18 @@ async function getRevelationDate() {
     }
 }
 
-// Verifica se já passou da data de revelação usando o valor armazenado
+// Verifica se já passou a data de revelação
 function isRevealTime() {
     if (!storedRevelationDate) return false;
-    // Converte a hora local para horário de Brasília:
     const agoraBrasilia = new Date(new Date().toLocaleString("en-US", { timeZone: "America/Sao_Paulo" }));
     return agoraBrasilia >= storedRevelationDate;
 }
 
-// Renderiza as mensagens, sem alteração no front (tudo vem do back)
+// Renderiza mensagens
 function renderMessages(messages) {
     const messagesDiv = document.getElementById("messages");
     if (!messagesDiv) return;
-    messagesDiv.innerHTML = ""; // Limpa mensagens antigas
+    messagesDiv.innerHTML = "";
 
     messages.forEach(entry => {
         const bubble = document.createElement("div");
@@ -40,7 +37,7 @@ function renderMessages(messages) {
     });
 }
 
-// Faz o fetch do endpoint /messages e renderiza na tela
+// Busca mensagens
 async function fetchAndRenderMessages() {
     try {
         const res = await fetch(messagesApiUrl);
@@ -51,17 +48,51 @@ async function fetchAndRenderMessages() {
     }
 }
 
-// Variável global para controlar se a requisição pós-revelação já foi feita
-let fetchedAfterReveal = false;
+// Contador regressivo
+function startCountdown(targetDate) {
+    const daysEl = document.getElementById("days");
+    const hoursEl = document.getElementById("hours");
+    const minutesEl = document.getElementById("minutes");
+    const secondsEl = document.getElementById("seconds");
+
+    function updateCountdown() {
+        const now = new Date(new Date().toLocaleString("en-US", { timeZone: "America/Sao_Paulo" }));
+        const diff = targetDate - now;
+
+        if (diff <= 0) {
+            daysEl.textContent = "00";
+            hoursEl.textContent = "00";
+            minutesEl.textContent = "00";
+            secondsEl.textContent = "00";
+            return;
+        }
+
+        const totalSeconds = Math.floor(diff / 1000);
+        const days = Math.floor(totalSeconds / 86400);
+        const hours = Math.floor((totalSeconds % 86400) / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const seconds = totalSeconds % 60;
+
+        daysEl.textContent = String(days).padStart(2, '0');
+        hoursEl.textContent = String(hours).padStart(2, '0');
+        minutesEl.textContent = String(minutes).padStart(2, '0');
+        secondsEl.textContent = String(seconds).padStart(2, '0');
+    }
+
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
+}
 
 document.addEventListener("DOMContentLoaded", async () => {
     const form = document.getElementById("message-form");
     const warning = document.getElementById("form-warning");
 
-    // Chama o endpoint /date uma única vez e armazena o resultado
     storedRevelationDate = await getRevelationDate();
 
-    // Verifica o período de revelação para definir se o form deve ser exibido
+    if (storedRevelationDate) {
+        startCountdown(storedRevelationDate);
+    }
+
     if (form && warning) {
         if (isRevealTime()) {
             form.classList.add("hidden");
@@ -86,28 +117,24 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
     }
 
-    // Renderiza as mensagens iniciais – o back já retorna oculto ou revelado conforme a data de revelação
     await fetchAndRenderMessages();
 });
 
-// LOOP DE VERIFICAÇÃO: A cada 5 segundos, verifica se já passou o horário da revelação.
-// Uma vez que o horário seja atingido, faz uma única requisição para atualizar as mensagens.
+// Verifica se é hora da revelação a cada 5s
 (function watchRevealTime() {
     setInterval(async () => {
         if (isRevealTime() && !fetchedAfterReveal) {
             console.log("✨ Período de revelação detectado! Atualizando mensagens...");
             await fetchAndRenderMessages();
 
-            // Ajusta visibilidade do form se necessário
             const form = document.getElementById("message-form");
             const warning = document.getElementById("form-warning");
             if (form && warning) {
                 form.classList.add("hidden");
                 warning.classList.remove("hidden");
             }
+
             fetchedAfterReveal = true;
-        } else {
-            console.log("⏳ Ainda não é hora da revelação...");
         }
-    }, 5000); // verifica a cada 5 segundos
+    }, 5000);
 })();

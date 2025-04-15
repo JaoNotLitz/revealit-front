@@ -180,3 +180,56 @@ h1 {
     font-size: 1.5rem;
   }
 }
+
+
+.countdown-box {
+  transform: scale(0.3); /* Reduz ainda mais o tamanho */
+  text-align: center;
+  background-color: #fff;
+  padding: 10px 15px; /* Menor padding */
+  border-radius: 8px; /* Bordas mais finas */
+  margin: 10px auto; /* Menor margem */
+  max-width: 400px; /* Largura ainda menor */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Sombra bem sutil */
+  font-family: 'Segoe UI', sans-serif;
+  position: fixed;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+}
+
+.countdown-box h2 {
+  margin-bottom: 10px; /* Menor margem */
+  font-size: 1rem; /* Fonte menor */
+  color: #2c2c5e;
+}
+
+.timer {
+  display: flex;
+  justify-content: center;
+  gap: 15px; /* Espaçamento reduzido */
+}
+
+.time-segment {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.label {
+  font-weight: bold;
+  font-size: 0.75rem; /* Fonte bem pequena */
+  color: #666;
+  margin-bottom: 3px; /* Menor margem */
+}
+
+.value {
+  font-size: 1.2rem; /* Fonte bem pequena */
+  font-weight: bold;
+  color: #2c2c5e;
+  background: #eef1ff;
+  padding: 4px 8px; /* Menor padding */
+  border-radius: 6px; /* Bordas mais finas */
+  min-width: 30px; /* Menor largura mínima */
+}

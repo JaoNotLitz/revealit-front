@@ -8,10 +8,13 @@
     <script defer src="script.js"></script>
 </head>
 <body>
-    <!-- Botão de Adicionar no canto superior esquerdo -->
+    <!-- Contador fixo no topo -->
+
+  
+    <!-- Botão de Adicionar -->
     <a href="form.html" class="add-button">Adicionar</a>
 
-    <!-- Fundo com onda animada -->
+    <!-- Fundo com onda -->
     <div class="waves-background">
         <svg class="wave" viewBox="0 0 1440 320">
             <path fill="#bfcaff" fill-opacity="1"
@@ -22,10 +25,31 @@
 
     <!-- Conteúdo principal -->
     <div class="container">
+        <!-- Contador até a revelação -->
+<div id="countdown" class="countdown-box">
+    <h2>⏳ Contador até a revelação:</h2>
+    <div class="timer">
+      <div class="time-segment">
+        <span class="label">Dias</span>
+        <span id="days" class="value">--</span>
+      </div>
+      <div class="time-segment">
+        <span class="label">Horas</span>
+        <span id="hours" class="value">--</span>
+      </div>
+      <div class="time-segment">
+        <span class="label">Minutos</span>
+        <span id="minutes" class="value">--</span>
+      </div>
+      <div class="time-segment">
+        <span class="label">Segundos</span>
+        <span id="seconds" class="value">--</span>
+      </div>
+    </div>
+  </div>
+  <br><br><br><br><br>
         <h1>Irmão em Cristo Secreto</h1>
-        <div id="messages" class="messages-container">
-            <!-- Mensagens serão inseridas aqui pelo JS -->
-        </div>
+        <div id="messages" class="messages-container"></div>
     </div>
 </body>
 </html>
